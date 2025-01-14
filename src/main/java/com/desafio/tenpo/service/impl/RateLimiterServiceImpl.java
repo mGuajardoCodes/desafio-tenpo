@@ -1,6 +1,6 @@
 package com.desafio.tenpo.service.impl;
 
-import com.desafio.tenpo.config.properties.RateLimiterConfig;
+import com.desafio.tenpo.config.properties.RateLimiterProperties;
 import com.desafio.tenpo.service.RateLimiterService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
@@ -13,8 +13,8 @@ import java.time.Duration;
 @AllArgsConstructor
 public class RateLimiterServiceImpl implements RateLimiterService {
 
-    private final ReactiveStringRedisTemplate redisTemplate;
-    private final RateLimiterConfig config;
+    private ReactiveStringRedisTemplate redisTemplate;
+    private RateLimiterProperties config;
 
     @Override
     public Mono<Boolean> isAllowed(String clientId) {

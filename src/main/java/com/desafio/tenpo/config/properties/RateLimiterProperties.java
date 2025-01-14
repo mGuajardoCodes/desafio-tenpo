@@ -12,7 +12,7 @@ import java.time.Duration;
 @Getter
 @Setter
 @ConfigurationProperties(prefix = "rate-limiter")
-public class RateLimiterConfig {
+public class RateLimiterProperties {
     private int limit;
     private Duration window;
 }

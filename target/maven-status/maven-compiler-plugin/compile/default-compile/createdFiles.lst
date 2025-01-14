@@ -3,7 +3,9 @@ com/desafio/tenpo/service/PercentageService.class
 com/desafio/tenpo/entity/ApiCallLogEntity.class
 com/desafio/tenpo/config/WebClientConfiguration.class
 com/desafio/tenpo/controller/ApiCallLoggingController.class
-com/desafio/tenpo/aspect/ApiCallLoggingAspect.class
+com/desafio/tenpo/config/ApiCallLoggingFilter.class
+com/desafio/tenpo/config/R2dbConfiguration.class
+com/desafio/tenpo/config/RateLimitingFilter.class
 com/desafio/tenpo/domain/PercentageDTO.class
 com/desafio/tenpo/exceptions/ExternalServiceException.class
 com/desafio/tenpo/controller/PercentageController.class
@@ -12,4 +14,7 @@ com/desafio/tenpo/DesafiotenpoApplication.class
 com/desafio/tenpo/repository/ApiCallLogRepository.class
 com/desafio/tenpo/service/impl/ApiCallLogServiceImpl.class
 com/desafio/tenpo/config/RedisConfiguration.class
+com/desafio/tenpo/service/RateLimiterService.class
 com/desafio/tenpo/exceptions/InternalServiceException.class
+com/desafio/tenpo/config/properties/RateLimiterConfig.class
+com/desafio/tenpo/service/impl/RateLimiterServiceImpl.class
