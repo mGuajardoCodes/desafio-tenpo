@@ -27,8 +27,8 @@ public class PercentageController {
         Instant startTime = Instant.now();
         log.info("Calculate percentage flow started");
         return percentageService.calculatePercentage(request).doFinally(r -> {
-                    Duration duration = Duration.between(startTime, Instant.now());
-                    log.info("Calculate percentage finished in {} milliseconds", duration.toMillis());
-                });
+            Duration duration = Duration.between(startTime, Instant.now());
+            log.info("Calculate percentage finished in {} milliseconds", duration.toMillis());
+        });
     }
 }

@@ -1,6 +1,5 @@
-package com.desafio.tenpo.aspect;
+package com.desafio.tenpo.config;
 
-import com.desafio.tenpo.controller.PercentageController;
 import com.desafio.tenpo.entity.ApiCallLogEntity;
 import com.desafio.tenpo.service.ApiCallLoggingService;
 import lombok.AllArgsConstructor;
@@ -15,7 +14,6 @@ import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.Optional;
 
 @Component
