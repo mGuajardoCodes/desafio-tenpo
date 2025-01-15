@@ -4,12 +4,12 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public class InternalServiceException extends RuntimeException {
+public class NotFoundException extends RuntimeException {
 
     private final HttpStatus status;
 
-    public InternalServiceException(String message) {
+    public NotFoundException(String message) {
         super(message);
-        this.status = HttpStatus.INTERNAL_SERVER_ERROR;
+        this.status = HttpStatus.NOT_FOUND;
     }
 }

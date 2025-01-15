@@ -1,5 +1,7 @@
 package com.desafio.tenpo.config;
 
+import com.desafio.tenpo.config.properties.RedisProperties;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -8,9 +10,7 @@ import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
-import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 
@@ -20,16 +20,10 @@ import java.util.Map;
 
 @Configuration
 @EnableCaching
+@AllArgsConstructor
 public class RedisConfiguration {
 
-    @Value("${spring.redis.host}")
-    private String redisHost;
-
-    @Value("${spring.redis.port}")
-    private int redisPort;
-
-    @Value("${spring.redis.cache.time}")
-    private int cacheTime;
+    private RedisProperties config;
 
     public static final String CACHE_NAME = "percentageCache";
     public static final String KEY_OF_PERCENTAGE = "callToGetPercentage";
@@ -37,7 +31,7 @@ public class RedisConfiguration {
 
     @Bean
     public ReactiveRedisConnectionFactory reactiveRedisConnectionFactory() {
-        return new LettuceConnectionFactory(redisHost, redisPort);
+        return new LettuceConnectionFactory(config.getHost(), config.getPort());
     }
 
     @Bean
@@ -52,7 +46,7 @@ public class RedisConfiguration {
                                         new GenericJackson2JsonRedisSerializer())
                         )
                         .disableCachingNullValues()
-                        .entryTtl(Duration.ofMinutes(cacheTime))
+                        .entryTtl(Duration.ofMinutes(config.getCacheTimeInMin()))
         );
 
         return RedisCacheManager.builder(redisConnectionFactory)
