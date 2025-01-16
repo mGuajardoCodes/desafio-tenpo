@@ -1,1 +1,12 @@
+com/desafio/tenpo/controller/PercentageControllerTest.class
+com/desafio/tenpo/service/impl/RedisCacheServiceImplTest.class
+com/desafio/tenpo/service/impl/ApiCallLogServiceImplTest.class
+com/desafio/tenpo/service/impl/PercentageServiceImplTest.class
+com/desafio/tenpo/service/impl/RateLimiterServiceImplTest.class
+com/desafio/tenpo/config/SwaggerConfigTest.class
 com/desafio/tenpo/DesafiotenpoApplicationTests.class
+com/desafio/tenpo/controller/ApiCallLoggingControllerTest.class
+com/desafio/tenpo/config/RateLimitingFilterTest.class
+com/desafio/tenpo/config/ApiCallLoggingFilterTest.class
+com/desafio/tenpo/config/WebClientConfigTest.class
+com/desafio/tenpo/controller/advice/GlobalExceptionHandlerTest.class

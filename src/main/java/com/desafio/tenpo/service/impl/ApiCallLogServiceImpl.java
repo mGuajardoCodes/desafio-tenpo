@@ -1,18 +1,19 @@
 package com.desafio.tenpo.service.impl;
 
+import com.desafio.tenpo.adapter.ApiCallLogAdapter;
+import com.desafio.tenpo.domain.ApiCallLogDTO;
 import com.desafio.tenpo.entity.ApiCallLogEntity;
+import com.desafio.tenpo.exceptions.ExternalServiceException;
 import com.desafio.tenpo.repository.ApiCallLogRepository;
 import com.desafio.tenpo.service.ApiCallLoggingService;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -20,51 +21,26 @@ public class ApiCallLogServiceImpl implements ApiCallLoggingService {
 
     private final ApiCallLogRepository repository;
     private static final Logger log = LoggerFactory.getLogger(ApiCallLogServiceImpl.class);
+    private final ApiCallLogAdapter adapter;
 
-    /**
-     * Saves an API call log to the database reactively.
-     *
-     * @param apiCallLogEntity The API call log entity to save.
-     * @return A Mono that completes when the operation is done.
-     */
+    @Override
+    public Mono<Void> saveCallHistory(ApiCallLogDTO apiCallLogDTO) {
+        log.info("Attempting to save API call log: {}", apiCallLogDTO);
 
-    public Mono<Void> saveLogApiCall(ApiCallLogEntity apiCallLogEntity) {
-
-        if (!isValidLog(apiCallLogEntity))
-            log.warn("Invalid API call log entity. Skipping save operation.");
-
-        return repository.save(apiCallLogEntity)
-                .doOnSuccess(savedLog ->
-                        log.info("API call log saved successfully. Endpoint: {}", savedLog.getEndpoint()))
-                .doOnError(e -> log.error("Failed to log API call for endpoint {}: {}",
-                        apiCallLogEntity.getEndpoint(), e.getMessage(), e)).then();
+        return repository.save(adapter.toEntity(apiCallLogDTO))
+                .doOnSuccess(saved -> log.info("Successfully saved API call log with ID: {}", saved.getId()))
+                .doOnError(error -> log.error("Error saving API call log", error))
+                .then();
     }
 
-
-    /**
-     * Retrieves a paginated list of historical API call logs reactively.
-     *
-     * @param pageable Pageable object for pagination.
-     * @return A Flux of API call log entities.
-     */
+    @Override
     public Flux<ApiCallLogEntity> getHistoricalApiCalls(Pageable pageable) {
-        int offset = pageable.getPageNumber() * pageable.getPageSize();
-        int limit = pageable.getPageSize();
-        return repository.findWithPagination(limit, offset);
+        log.info("Retrieving API call logs - Page: {}, Size: {}", pageable.getPageNumber(), pageable.getPageSize());
+        return repository.findWithPagination(pageable)
+                .onErrorMap(error -> {
+                    log.error("Error retrieving API call logs", error);
+                    return new ExternalServiceException("Failed to retrieve API call logs",
+                            HttpStatus.SERVICE_UNAVAILABLE);
+                });
     }
-
-
-    /**
-     * Validates the API call log entity.
-     *
-     * @param apiCallLogEntity The API call log entity to validate.
-     * @return True if valid, false otherwise.
-     */
-    private boolean isValidLog(ApiCallLogEntity apiCallLogEntity) {
-        return apiCallLogEntity != null &&
-                Objects.nonNull(apiCallLogEntity.getEndpoint()) &&
-                Objects.nonNull(apiCallLogEntity.getTimestamp()) &&
-                apiCallLogEntity.getTimestamp().isBefore(LocalDateTime.now());
-    }
-
 }

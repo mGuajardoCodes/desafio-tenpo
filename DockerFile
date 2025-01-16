@@ -1,0 +1,27 @@
+# STAGE 1 : BUILD IMAGE WITH MAVEN AND JAVA
+FROM maven:3.9.9-amazoncorretto-21 AS build
+
+# SET WORKDIR
+WORKDIR /app
+
+# COPY POM AND DOWNLOAD LIBRARIES
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
+
+# COPY BASE CODE
+COPY src ./src
+RUN mvn clean package -DskipTests
+
+FROM amazoncorretto:21.0.5
+
+# SET WORK DIRECTORY
+WORKDIR /app
+
+# COPY JAR
+COPY --from=build /app/target/tenpo-1.0.0-SNAPSHOT.jar app.jar
+
+# PORT EXPOSE
+EXPOSE 8081
+
+# LAUNCH APP
+ENTRYPOINT ["java", "-jar", "app.jar"]

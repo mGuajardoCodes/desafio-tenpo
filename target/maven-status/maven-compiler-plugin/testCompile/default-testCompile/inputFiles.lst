@@ -1,1 +1,12 @@
-/home/mguajardo/Study/tenpo/src/test/java/com/desafio/tenpo/DesafiotenpoApplicationTests.java
+/home/mguajardo/Study/desafio-tenpo/src/test/java/com/desafio/tenpo/controller/PercentageControllerTest.java
+/home/mguajardo/Study/desafio-tenpo/src/test/java/com/desafio/tenpo/service/impl/ApiCallLogServiceImplTest.java
+/home/mguajardo/Study/desafio-tenpo/src/test/java/com/desafio/tenpo/controller/ApiCallLoggingControllerTest.java
+/home/mguajardo/Study/desafio-tenpo/src/test/java/com/desafio/tenpo/service/impl/PercentageServiceImplTest.java
+/home/mguajardo/Study/desafio-tenpo/src/test/java/com/desafio/tenpo/config/WebClientConfigTest.java
+/home/mguajardo/Study/desafio-tenpo/src/test/java/com/desafio/tenpo/config/ApiCallLoggingFilterTest.java
+/home/mguajardo/Study/desafio-tenpo/src/test/java/com/desafio/tenpo/service/impl/RateLimiterServiceImplTest.java
+/home/mguajardo/Study/desafio-tenpo/src/test/java/com/desafio/tenpo/controller/advice/GlobalExceptionHandlerTest.java
+/home/mguajardo/Study/desafio-tenpo/src/test/java/com/desafio/tenpo/config/SwaggerConfigTest.java
+/home/mguajardo/Study/desafio-tenpo/src/test/java/com/desafio/tenpo/DesafiotenpoApplicationTests.java
+/home/mguajardo/Study/desafio-tenpo/src/test/java/com/desafio/tenpo/service/impl/RedisCacheServiceImplTest.java
+/home/mguajardo/Study/desafio-tenpo/src/test/java/com/desafio/tenpo/config/RateLimitingFilterTest.java

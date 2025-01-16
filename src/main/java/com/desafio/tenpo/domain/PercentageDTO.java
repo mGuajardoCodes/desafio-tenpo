@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class PercentageDTO {
-    private int num1;
-    private int num2;
+    private Integer num1;
+    private Integer num2;
 }

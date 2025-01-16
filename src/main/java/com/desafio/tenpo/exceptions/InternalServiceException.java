@@ -1,12 +1,15 @@
 package com.desafio.tenpo.exceptions;
 
 import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.StandardException;
+import org.springframework.http.HttpStatus;
 
-@StandardException
 @Getter
-@Setter
 public class InternalServiceException extends RuntimeException {
-    private String message;
+
+    private final HttpStatus status;
+
+    public InternalServiceException(String message) {
+        super(message);
+        this.status = HttpStatus.INTERNAL_SERVER_ERROR;
+    }
 }
