@@ -1,5 +1,7 @@
 package com.desafio.tenpo.service.impl;
 
+import com.desafio.tenpo.adapter.ApiCallLogAdapter;
+import com.desafio.tenpo.domain.ApiCallLogDTO;
 import com.desafio.tenpo.entity.ApiCallLogEntity;
 import com.desafio.tenpo.exceptions.ExternalServiceException;
 import com.desafio.tenpo.repository.ApiCallLogRepository;
@@ -26,6 +28,9 @@ public class ApiCallLogServiceImplTest {
     @InjectMocks
     private ApiCallLogServiceImpl service;
 
+    @Mock
+    ApiCallLogAdapter apiCallLogAdapter;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -34,16 +39,22 @@ public class ApiCallLogServiceImplTest {
     @Test
     @DisplayName("Should save API call log successfully")
     void saveCallHistorySuccess() {
-        ApiCallLogEntity log = new ApiCallLogEntity(1L,
+        ApiCallLogDTO log = new ApiCallLogDTO(1L,
                 java.time.LocalDateTime.now(), "/api/test",
                 "param=value", "200 OK", null);
-        when(repository.save(any(ApiCallLogEntity.class))).thenReturn(Mono.just(log));
+
+        ApiCallLogEntity apiCallLogEntity = new ApiCallLogEntity(1L,
+                java.time.LocalDateTime.now(), "/api/test",
+                "param=value", "200 OK", null);
+
+        when(apiCallLogAdapter.toEntity(any())).thenReturn(apiCallLogEntity);
+        when(repository.save(any(ApiCallLogEntity.class))).thenReturn(Mono.just(apiCallLogEntity));
 
         Mono<Void> result = service.saveCallHistory(log);
 
         StepVerifier.create(result)
                 .verifyComplete();
-        verify(repository, times(1)).save(log);
+        verify(repository, times(1)).save(apiCallLogEntity);
     }
 
     @Test

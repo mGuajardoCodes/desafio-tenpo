@@ -19,6 +19,7 @@ import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/percentage")
@@ -65,11 +66,11 @@ public class PercentageController {
     }
 
     private Mono<Void> validateRequest(PercentageDTO request) {
-        return Mono.defer(() -> Mono.just(request)
-                .filter(req -> req.getNum1() != null)
-                .switchIfEmpty(Mono.error(new BadRequestException("Field 'num1' cannot be null")))
-                .filter(req -> req.getNum2() != null)
-                .switchIfEmpty(Mono.error(new BadRequestException("Field 'num2' cannot be null")))
-                .then());
+        return Mono.just(request)
+                .filter(req -> Objects.nonNull(req.getNum1()))
+                .switchIfEmpty(Mono.defer(() -> Mono.error(new BadRequestException("Field 'num1' cannot be null"))))
+                .filter(req -> Objects.nonNull(req.getNum2()))
+                .switchIfEmpty(Mono.defer(() -> Mono.error(new BadRequestException("Field 'num2' cannot be null"))))
+                .then();
     }
 }

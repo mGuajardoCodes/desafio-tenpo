@@ -1,5 +1,6 @@
 package com.desafio.tenpo.config;
 
+import com.desafio.tenpo.config.filter.RateLimitingFilter;
 import com.desafio.tenpo.service.RateLimiterService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

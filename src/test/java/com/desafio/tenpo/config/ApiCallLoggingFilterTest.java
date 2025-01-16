@@ -1,5 +1,6 @@
 package com.desafio.tenpo.config;
 
+import com.desafio.tenpo.config.filter.ApiCallLoggingFilter;
 import com.desafio.tenpo.entity.ApiCallLogEntity;
 import com.desafio.tenpo.service.ApiCallLoggingService;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,14 +44,15 @@ class ApiCallLoggingFilterTest {
         MockServerWebExchange exchange = MockServerWebExchange.from(request);
 
         when(webFilterChain.filter(exchange)).thenReturn(Mono.empty());
-        when(apiCallLoggingService.saveCallHistory(any(ApiCallLogEntity.class))).thenReturn(Mono.empty());
+        when(apiCallLoggingService.saveCallHistory(any(com.desafio.tenpo.domain.ApiCallLogDTO.class)))
+                .thenReturn(Mono.empty());
 
         // Act
         Mono<Void> result = apiCallLoggingFilter.filter(exchange, webFilterChain);
 
         // Assert
         StepVerifier.create(result).verifyComplete();
-        verify(apiCallLoggingService).saveCallHistory(any(ApiCallLogEntity.class));
+        verify(apiCallLoggingService).saveCallHistory(any(com.desafio.tenpo.domain.ApiCallLogDTO.class));
     }
 
     @Test
@@ -62,7 +64,8 @@ class ApiCallLoggingFilterTest {
 
         RuntimeException exception = new RuntimeException("Test error");
         when(webFilterChain.filter(exchange)).thenReturn(Mono.error(exception));
-        when(apiCallLoggingService.saveCallHistory(any(ApiCallLogEntity.class))).thenReturn(Mono.empty());
+        when(apiCallLoggingService.saveCallHistory(any(com.desafio.tenpo.domain.ApiCallLogDTO.class)))
+                .thenReturn(Mono.empty());
 
         // Act
         Mono<Void> result = apiCallLoggingFilter.filter(exchange, webFilterChain);
@@ -83,13 +86,14 @@ class ApiCallLoggingFilterTest {
         MockServerWebExchange exchange = MockServerWebExchange.from(request);
 
         when(webFilterChain.filter(exchange)).thenReturn(Mono.empty());
-        when(apiCallLoggingService.saveCallHistory(any(ApiCallLogEntity.class))).thenReturn(Mono.error(new RuntimeException("Database error")));
+        when(apiCallLoggingService.saveCallHistory(any(com.desafio.tenpo.domain.ApiCallLogDTO.class)))
+                .thenReturn(Mono.error(new RuntimeException("Database error")));
 
         // Act
         Mono<Void> result = apiCallLoggingFilter.filter(exchange, webFilterChain);
 
         // Assert
         StepVerifier.create(result).verifyComplete();
-        verify(apiCallLoggingService).saveCallHistory(any(ApiCallLogEntity.class));
+        verify(apiCallLoggingService).saveCallHistory(any(com.desafio.tenpo.domain.ApiCallLogDTO.class));
     }
 }

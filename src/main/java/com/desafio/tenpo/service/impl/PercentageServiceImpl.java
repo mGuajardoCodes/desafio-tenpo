@@ -41,8 +41,8 @@ public class PercentageServiceImpl implements PercentageService {
                 .uri("/")
                 .retrieve()
                 .bodyToMono(Double.class)
-                .timeout(Duration.ofMillis(config.getTimeoutInMs()))
-                .retry(config.getServiceCallMaxRetries())
+                .timeout(Duration.ofMillis(config.getTimeout()))
+                .retry(config.getRetries())
                 .flatMap(response -> redisCacheService.updateCachedValueInRedis(response).thenReturn(response))
                 .onErrorResume(throwable -> {
                     log.error("External service failed, falling back to Redis cache");

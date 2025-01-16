@@ -64,8 +64,8 @@ public class PercentageServiceImplTest {
 
         // Configure WebClientProperties
         WebClientProperties config = new WebClientProperties();
-        config.setTimeoutInMs(2000); // 2 seconds timeout
-        config.setServiceCallMaxRetries(2); // Retry twice on failure
+        config.setTimeout(2000);
+        config.setRetries(2);
 
         // Inject dependencies into PercentageServiceImpl
         percentageService = new PercentageServiceImpl(redisCacheService, webClient, config);

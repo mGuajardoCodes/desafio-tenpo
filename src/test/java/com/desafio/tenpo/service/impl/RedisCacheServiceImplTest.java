@@ -8,16 +8,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
+import org.springframework.data.redis.core.ReactiveRedisTemplate;
+import org.springframework.data.redis.core.ReactiveValueOperations;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import static com.desafio.tenpo.config.RedisConfiguration.CACHE_NAME;
 import static com.desafio.tenpo.config.RedisConfiguration.KEY_OF_PERCENTAGE;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 /**
@@ -27,34 +25,30 @@ import static org.mockito.Mockito.*;
 public class RedisCacheServiceImplTest {
 
     @Mock
-    private CacheManager cacheManager;
+    private ReactiveRedisTemplate<String, Object> reactiveRedisTemplate;
 
     @Mock
-    private Cache cache;
+    private ReactiveValueOperations<String, Object> reactiveValueOperations;
 
     @InjectMocks
     private RedisCacheServiceImpl redisCacheService;
 
-    private static final String KEY = KEY_OF_PERCENTAGE;
     private static final Double CACHED_VALUE = 75.5;
 
     @BeforeEach
     void setUp() {
-        // Any common setup can be done here
+        when(reactiveRedisTemplate.opsForValue()).thenReturn(reactiveValueOperations);
     }
 
     @AfterEach
-    void tearDown() throws Exception {
-        // Reset mocks after each test to ensure test isolation
-        Mockito.reset(cacheManager, cache);
+    void tearDown() {
+        reset(reactiveRedisTemplate, reactiveValueOperations);
     }
-
 
     @Test
     @DisplayName("getCachedValueInRedis: Successfully retrieves cached value")
     void testGetCachedValueInRedis_Success() {
-        when(cacheManager.getCache(CACHE_NAME)).thenReturn(cache);
-        when(cache.get(KEY, Double.class)).thenReturn(CACHED_VALUE);
+        when(reactiveValueOperations.get(KEY_OF_PERCENTAGE)).thenReturn(Mono.just(CACHED_VALUE));
 
         Mono<Double> result = redisCacheService.getCachedValueInRedis();
 
@@ -62,18 +56,13 @@ public class RedisCacheServiceImplTest {
                 .expectNext(CACHED_VALUE)
                 .verifyComplete();
 
-        verify(cacheManager, times(1)).getCache(CACHE_NAME);
-        verify(cache, times(1)).get(KEY, Double.class);
+        verify(reactiveValueOperations, times(1)).get(KEY_OF_PERCENTAGE);
     }
-
 
     @Test
     @DisplayName("getCachedValueInRedis: Throws NotFoundException when cached value is absent")
     void testGetCachedValueInRedis_CachedValueNotFound() {
-
-        when(cacheManager.getCache(CACHE_NAME)).thenReturn(cache);
-        // Simulate absent cache value
-        when(cache.get(KEY, Double.class)).thenReturn(null);
+        when(reactiveValueOperations.get(KEY_OF_PERCENTAGE)).thenReturn(Mono.empty());
 
         Mono<Double> result = redisCacheService.getCachedValueInRedis();
 
@@ -83,64 +72,38 @@ public class RedisCacheServiceImplTest {
                                 throwable.getMessage().equals("Cache value not found"))
                 .verify();
 
-        verify(cacheManager, times(1)).getCache(CACHE_NAME);
-        verify(cache, times(1)).get(KEY, Double.class);
+        verify(reactiveValueOperations, times(1)).get(KEY_OF_PERCENTAGE);
     }
-
-
-    @Test
-    @DisplayName("getCachedValueInRedis: Throws NotFoundException when cache config is absent")
-    void testGetCachedValueInRedis_CacheConfigNotFound() {
-        // Simulate absent cache config
-        when(cacheManager.getCache(CACHE_NAME)).thenReturn(null);
-
-        Mono<Double> result = redisCacheService.getCachedValueInRedis();
-
-        StepVerifier.create(result)
-                .expectErrorMatches(throwable ->
-                        throwable instanceof NotFoundException &&
-                                throwable.getMessage().equals("Cache config not found"))
-                .verify();
-
-        verify(cacheManager, times(1)).getCache(CACHE_NAME);
-        verify(cache, times(0)).get(anyString(), eq(Double.class)); // cache.get should not be called
-    }
-
 
     @Test
     @DisplayName("updateCachedValueInRedis: Successfully updates cached value")
     void testUpdateCachedValueInRedis_Success() {
-
         Double newPercentage = 85.0;
-        when(cacheManager.getCache(CACHE_NAME)).thenReturn(cache);
+        when(reactiveValueOperations.set(KEY_OF_PERCENTAGE, newPercentage)).thenReturn(Mono.just(true));
 
         Mono<Void> result = redisCacheService.updateCachedValueInRedis(newPercentage);
 
         StepVerifier.create(result)
                 .verifyComplete();
 
-        verify(cacheManager, times(1)).getCache(CACHE_NAME);
-        verify(cache, times(1)).put(KEY, newPercentage);
+        verify(reactiveValueOperations, times(1)).set(KEY_OF_PERCENTAGE, newPercentage);
     }
 
     @Test
-    @DisplayName("updateCachedValueInRedis: Throws NotFoundException when cache config is absent")
-    void testUpdateCachedValueInRedis_CacheConfigNotFound() {
-
+    @DisplayName("updateCachedValueInRedis: Throws Exception when Redis operation fails")
+    void testUpdateCachedValueInRedis_Failure() {
         Double newPercentage = 85.0;
-        // Simulate absent cache config
-        when(cacheManager.getCache(CACHE_NAME)).thenReturn(null);
+        when(reactiveValueOperations.set(KEY_OF_PERCENTAGE, newPercentage)).thenReturn(Mono.error(
+                new RuntimeException("Redis failure")));
 
         Mono<Void> result = redisCacheService.updateCachedValueInRedis(newPercentage);
 
         StepVerifier.create(result)
                 .expectErrorMatches(throwable ->
-                        throwable instanceof NotFoundException &&
-                                throwable.getMessage().equals("Cache config not found"))
+                        throwable instanceof RuntimeException &&
+                                throwable.getMessage().equals("Redis failure"))
                 .verify();
 
-        verify(cacheManager, times(1)).getCache(CACHE_NAME);
-        // cache.put should not be called
-        verify(cache, times(0)).put(anyString(), any());
+        verify(reactiveValueOperations, times(1)).set(KEY_OF_PERCENTAGE, newPercentage);
     }
 }

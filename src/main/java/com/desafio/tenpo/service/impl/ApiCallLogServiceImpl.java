@@ -1,5 +1,7 @@
 package com.desafio.tenpo.service.impl;
 
+import com.desafio.tenpo.adapter.ApiCallLogAdapter;
+import com.desafio.tenpo.domain.ApiCallLogDTO;
 import com.desafio.tenpo.entity.ApiCallLogEntity;
 import com.desafio.tenpo.exceptions.ExternalServiceException;
 import com.desafio.tenpo.repository.ApiCallLogRepository;
@@ -19,11 +21,13 @@ public class ApiCallLogServiceImpl implements ApiCallLoggingService {
 
     private final ApiCallLogRepository repository;
     private static final Logger log = LoggerFactory.getLogger(ApiCallLogServiceImpl.class);
+    private final ApiCallLogAdapter adapter;
 
     @Override
-    public Mono<Void> saveCallHistory(ApiCallLogEntity apiCallLogEntity) {
-        log.info("Attempting to save API call log: {}", apiCallLogEntity);
-        return repository.save(apiCallLogEntity)
+    public Mono<Void> saveCallHistory(ApiCallLogDTO apiCallLogDTO) {
+        log.info("Attempting to save API call log: {}", apiCallLogDTO);
+
+        return repository.save(adapter.toEntity(apiCallLogDTO))
                 .doOnSuccess(saved -> log.info("Successfully saved API call log with ID: {}", saved.getId()))
                 .doOnError(error -> log.error("Error saving API call log", error))
                 .then();

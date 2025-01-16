@@ -1,5 +1,6 @@
 package com.desafio.tenpo.controller;
 
+import com.desafio.tenpo.domain.ApiCallLogDTO;
 import com.desafio.tenpo.entity.ApiCallLogEntity;
 import com.desafio.tenpo.service.ApiCallLoggingService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,8 +39,7 @@ public class ApiCallLoggingController {
                     responseCode = "200",
                     description = "Logs retrieved successfully",
                     content = @Content(mediaType = "application/json",
-                            // Bad practice ????? Expose entity ???? probably yes XD sorry is 4:30 am, im tired :(
-                            schema = @Schema(implementation = ApiCallLogEntity.class))
+                            schema = @Schema(implementation = ApiCallLogDTO.class))
             ),
             @ApiResponse(
                     responseCode = "503",

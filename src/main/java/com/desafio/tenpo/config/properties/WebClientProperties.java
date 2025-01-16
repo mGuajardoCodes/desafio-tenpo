@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 @Setter
 @ConfigurationProperties(prefix = "webclient")
 public class WebClientProperties {
-    private int serviceCallMaxRetries;
-    private long timeoutInMs;
+    private int retries;
+    // Timeout in MS
+    private long timeout;
 }
