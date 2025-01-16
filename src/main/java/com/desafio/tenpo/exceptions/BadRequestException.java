@@ -1,6 +1,5 @@
 package com.desafio.tenpo.exceptions;
 
-
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 

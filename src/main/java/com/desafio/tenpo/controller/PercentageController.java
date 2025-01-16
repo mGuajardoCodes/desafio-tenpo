@@ -10,12 +10,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/percentage")
@@ -30,10 +28,20 @@ public class PercentageController {
         Instant startTime = Instant.now();
         log.info("Calculate percentage flow started");
 
-        return percentageService.calculatePercentage(Mono.just(request)).doFinally(r -> {
-            Duration duration = Duration.between(startTime, Instant.now());
-            log.info("Calculate percentage finished in {} milliseconds", duration.toMillis());
-        });
+        return validateRequest(request)
+                .then(percentageService.calculatePercentage(Mono.just(request)))
+                .doFinally(signalType -> {
+                    Duration duration = Duration.between(startTime, Instant.now());
+                    log.info("Calculate percentage finished in {} milliseconds", duration.toMillis());
+                });
     }
 
+    private Mono<Void> validateRequest(PercentageDTO request) {
+        return Mono.defer(() -> Mono.just(request)
+                .filter(req -> req.getNum1() != null)
+                .switchIfEmpty(Mono.error(new BadRequestException("Field 'num1' cannot be null")))
+                .filter(req -> req.getNum2() != null)
+                .switchIfEmpty(Mono.error(new BadRequestException("Field 'num2' cannot be null")))
+                .then());
+    }
 }

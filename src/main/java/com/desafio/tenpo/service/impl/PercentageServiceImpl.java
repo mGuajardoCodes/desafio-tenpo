@@ -25,8 +25,8 @@ public class PercentageServiceImpl implements PercentageService {
     private final WebClientProperties config;
 
     public Mono<Integer> calculatePercentage(Mono<PercentageDTO> request) {
-        return request.flatMap(entryRequest -> {
 
+        return request.flatMap(entryRequest -> {
 
             int sum = entryRequest.getNum1() + entryRequest.getNum2();
 

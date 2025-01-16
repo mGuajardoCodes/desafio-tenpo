@@ -30,9 +30,10 @@ public class RateLimitingFilter implements WebFilter {
                 .flatMap(isAllowed -> isAllowed ? chain.filter(exchange) : handleTooManyRequests(exchange));
     }
 
+
     private Mono<Void> handleTooManyRequests(ServerWebExchange exchange) {
         exchange.getResponse().setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
-        byte[] responseMessage = "Too Many Requests".getBytes();
+        byte[] responseMessage = "You are exceeding the maximum requests per minute".getBytes();
         return exchange.getResponse().writeWith(Mono.just(exchange
                 .getResponse()
                 .bufferFactory()
