@@ -24,23 +24,21 @@ public class PercentageServiceImpl implements PercentageService {
     private final WebClient webClient;
     private final WebClientProperties config;
 
+    @Override
     public Mono<Integer> calculatePercentage(Mono<PercentageDTO> request) {
-
         return request.flatMap(entryRequest -> {
-
             int sum = entryRequest.getNum1() + entryRequest.getNum2();
 
             return callToGetPercentage().map(percentage -> {
                 double calculatedPercentage = sum * (percentage / 100);
                 return (int) Math.round(sum + calculatedPercentage);
             });
-
         });
     }
 
     public Mono<Double> callToGetPercentage() {
         return webClient.get()
-                .uri("http://mockpercentage.cl")
+                .uri("/")
                 .retrieve()
                 .bodyToMono(Double.class)
                 .timeout(Duration.ofMillis(config.getTimeoutInMs()))

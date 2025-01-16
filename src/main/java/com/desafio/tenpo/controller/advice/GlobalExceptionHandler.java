@@ -3,6 +3,7 @@ package com.desafio.tenpo.controller.advice;
 import com.desafio.tenpo.exceptions.BadRequestException;
 import com.desafio.tenpo.exceptions.ExternalServiceException;
 import com.desafio.tenpo.exceptions.InternalServiceException;
+import com.desafio.tenpo.exceptions.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -34,6 +35,10 @@ public class GlobalExceptionHandler {
         return logAndBuildResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), ex.getCause());
     }
 
+    @ExceptionHandler(NotFoundException.class)
+    public Mono<Map<String, Object>> handleNotFoundException(NotFoundException ex) {
+        return logAndBuildResponse(HttpStatus.NOT_FOUND, ex.getMessage(), ex.getCause());
+    }
 
     @ExceptionHandler(Exception.class)
     public Mono<Map<String, Object>> handleGeneralException(Exception ex) {
