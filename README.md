@@ -93,6 +93,12 @@ Además, la mayor parte del código utiliza un enfoque reactivo para mantener la
     - Principalmente Unit Tests con JUnit y Mockito.
     - Algunos servicios incluyen Integration Tests usando MockServerNetty, preferido frente a WireMock por su soporte reactivo y actualizaciones.
 
+
+10. **Tips**:
+
+    - Si quieres probar el funcionamiento del cache puedes configurar el timeout de Webclient en 0 MS, esta propiedad puedes modificarla en los environments del
+    docker-compose o en el app properties, la property se llama WEBCLIENT_TIMEOUT.  
+
 ---
 
 # Project: Reactive Application with Java and Spring Boot
@@ -189,5 +195,9 @@ Additionally, most of the code is reactive to align with the technologies used. 
     - Mainly Unit Tests with JUnit and Mockito.
     - Some services include Integration Tests using MockServerNetty, preferred over WireMock for its reactive support and updates.
 
+10. **Tips**:
+
+    - If you want to test the cache functionality, you can set the Webclient timeout to 0 ms. This property can be modified in the environments of the docker-compose or in the app properties.
+    The property is called WEBCLIENT_TIMEOUT.
 ---
 
